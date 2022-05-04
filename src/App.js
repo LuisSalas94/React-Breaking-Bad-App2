@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import CharacterList from "./Components/CharacterList";
+import Navbar from "./Components/Navbar";
+import SearchBar from "./Components/SearchBar";
+import Spinner from "./Components/Spinner";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [characters, setCharacters] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [query, setQuery] = useState("");
+
+	const callBreakindBadAPI = async () => {
+		const url = `https://www.breakingbadapi.com/api/characters?name=${query}`;
+		const resp = await fetch(url);
+		const data = await resp.json();
+		setCharacters(data);
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		callBreakindBadAPI();
+	}, [query]);
+
+	return (
+		<div className="container">
+			<Navbar />
+			<SearchBar setQuery={(query) => setQuery(query)} />
+			{loading ? <Spinner /> : <CharacterList characters={characters} />}
+		</div>
+	);
 }
 
 export default App;
